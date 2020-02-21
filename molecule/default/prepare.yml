@@ -8,6 +8,7 @@
     ansible_deps: []
   tasks:
     - name: install python3
+      changed_when: false
       raw: "apt update && apt install -y python3"
 
     - name: install ansible requirements
