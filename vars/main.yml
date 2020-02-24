@@ -6,3 +6,16 @@ dependencies:
   - libpq-dev
   - python3-pip
   - netbase
+
+docker_dependencies:
+  pip_packages:
+    - docker
+  packages:
+    - gnupg2
+    - apt-transport-https
+    - ca-certificates
+    - software-properties-common
+
+docker_packages:
+  - containerd.io
+  - docker-ce
