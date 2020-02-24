@@ -3,5 +3,4 @@ Description="Backend Flask server application"
 After=network.target
 
 [Service]
-Environment=FLASK_APP={{ repo_absolute_path['stdout'] }}/application
-ExecStart=flask run
+ExecStart={{ develop | ternary(venv_python_executable.stdout, '/usr/bin/python' + venv_python_version.stdout)}}  {{ repo_absolute_path.stdout }}/wsgi.py

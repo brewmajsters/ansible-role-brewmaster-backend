@@ -5,3 +5,4 @@ dependencies:
   - git
   - libpq-dev
   - python3-pip
+  - netbase

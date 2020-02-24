@@ -1,0 +1,12 @@
+---
+# source: http://www.googlinux.com/creating-docker-container-using-ansible/index.html
+
+- name: create timescaledb container
+  become: true
+  docker_container:
+    name: "{{ timescaledb_docker.name }}"
+    image: "{{ timescaledb_docker.image }}"
+    volumes: "timescaledb_docker.volumes"
+    privileged: "{{ timescaledb_docker.privileged }}"
+    ports: "{{ timescaledb_docker.ports }}"
+    env: "{{ timescaledb_docker.env }}"

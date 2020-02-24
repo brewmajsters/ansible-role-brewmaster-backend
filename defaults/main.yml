@@ -9,3 +9,27 @@ backend_service:
   name: "backend"
 
 develop: false
+
+timescaledb_docker:
+  name: "brewmaster-timescaledb"
+  image: "timescale/timescaledb:latest-pg11"
+  tag: "latest-pg11"
+  volumes:
+    - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  privileged: true
+  ports: "5432:5432"
+  env:
+    POSTGRES_PASSWORD: brewmasters
+
+docker_dependencies:
+  pip_packages:
+    - docker
+  packages:
+    - gnupg2
+    - apt-transport-https
+    - ca-certificates
+    - software-properties-common
+
+docker_packages:
+  - containerd.io
+  - docker-ce
