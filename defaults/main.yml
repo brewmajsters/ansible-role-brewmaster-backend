@@ -19,3 +19,8 @@ timescaledb_docker:
   ports: "5432:5432"
   env:
     POSTGRES_PASSWORD: brewmasters
+
+timescaledb:
+  root_password: "{{ timescaledb_docker.env.POSTGRES_PASSWORD }}"
+  database_name: brewmaster
+  database_owner: postgres  # include create user task

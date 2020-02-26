@@ -22,10 +22,12 @@
     repo: "{{ repo['url'] }}"
     force: true
     version: "{{ repo['version'] | default(omit) }}"
-    dest: "{{ repo['dest'] }}"  # "{{ repo['dest'].startswith('/') | ternary(repo['dest'], ansible_env.HOME + repo['dest']) }}"
+    dest: "{{ repo['dest'] }}"
+  register: git_repo
   tags: install
 
 - name: copy .env.example to .env file
+  when: git_repo.changed
   command: "cp .env.example .env"
   args:
     chdir: "{{ repo['dest'] }}"
@@ -33,9 +35,16 @@
 
 - name: configure environment variables
   lineinfile:
-    regex: "DATABASE_PASSWORD"
-    line: "DATABASE_PASSWORD={{ timescaledb_docker.env.POSTGRES_PASSWORD }}"
+    regex: "{{ item.env }}"
+    line: "{{ item.env }}={{ item.val }}"
     path: "{{ repo['dest'] }}/.env"
+  loop:
+    - env: DATABASE_PASSWORD
+      val: "{{ timescaledb.root_password }}"
+    - env: DATABASE_USER
+      val: "{{ timescaledb.database_owner }}"
+    - env: DATABASE_NAME
+      val: "{{ timescaledb.database_name }}"
   tags: install
 
 - name: PIPENV | install backend application
