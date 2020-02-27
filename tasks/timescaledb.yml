@@ -6,7 +6,6 @@
   docker_container:
     name: "{{ timescaledb_docker.name }}"
     image: "{{ timescaledb_docker.image }}"
-    volumes: "timescaledb_docker.volumes"
     privileged: "{{ timescaledb_docker.privileged }}"
     ports: "{{ timescaledb_docker.ports }}"
     env: "{{ timescaledb_docker.env }}"
