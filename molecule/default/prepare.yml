@@ -17,3 +17,16 @@
         name: "{{ item }}"
         state: present
       loop: "{{ ansible_deps }}"
+
+
+- name: Docker host prepare
+  hosts: localhost
+  become: true
+  tasks:
+    - name: create test network
+      docker_network:
+        name: test
+
+    - name: connect timescaledb container to test network
+      changed_when: false
+      command: "docker network connect test timescaledb"

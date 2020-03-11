@@ -10,15 +10,9 @@ backend_service:
 
 develop: false
 
-timescaledb_docker:
-  name: "brewmaster-timescaledb"
-  image: "timescale/timescaledb:latest-pg11"
-  privileged: true
-  ports: "5432:5432"
-  env:
-    POSTGRES_PASSWORD: brewmasters
-
-timescaledb:
-  root_password: "{{ timescaledb_docker.env.POSTGRES_PASSWORD }}"
-  database_name: brewmaster
-  database_owner: postgres  # include create user task
+# environment variable to be modified in '.env' file
+backend_environments: {}
+# backend_environments:
+#   DATABASE_PASSWORD: brewmasters
+#   DATABASE_USER: postgres
+#   DATABASE_NAME: brewmaster

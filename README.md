@@ -2,11 +2,12 @@
 
 [![Build Status](https://travis-ci.org/brewmajsters/ansible-role-brewmaster-backend.svg?branch=master)](https://travis-ci.org/brewmajsters/ansible-role-brewmaster-backend)
 
-Setup the environment for docker containers and install the TimescaleDB database in a docker container. Download and install brewmajsters/brewmaster-backend with setup systemd service for flask server.
+Download and install brewmajsters/brewmaster-backend with setup systemd service for flask server.
 
 ## Requirements
 
-None
+setup TimescaleDB instance accessible on 5432/tcp
+- [ansible-role-timescaledb](https://github.com/brewmajsters/ansible-role-timescaledb)
 
 ## Role Variables
 
@@ -18,14 +19,7 @@ Refer to the [default variables](defaults/main.yml).
     develop: <bool, if false (default) the application is install with '--deploy --system' flags>
     backend_service:
       name: <str, systemd service name>
-    timescaledb_docker:
-      name: <str, docker image name>
-      image: <str, timescaledb docker image[:tag]>
-      volumes: <list, volumes to mount to the docker container>
-      privileged: <bool, give extended privileges to the container>
-      ports: <str, port mapping>
-      env: <dict, docker container custom environments>
-
+    backend_environments: <dict, environment variables to be modified in '.env' file>
 
 ## Dependencies
 
@@ -39,6 +33,8 @@ None
           repo:
             dest: realtive/path/to/dest
           develop: true
+          backend_environments:
+            DATABASE_HOST: 192.168.127.22
 
 ## License
 

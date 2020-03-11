@@ -49,8 +49,10 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
     pre_build_image: true
-    environment:
-      DOCKER_STORAGE_DRIVER: overlay2
+    networks:
+      - name: test
+        links:
+          - timescaledb
 provisioner:
   name: ansible
   inventory:
@@ -58,4 +60,4 @@ provisioner:
       all:
         ansible_python_interpreter: /usr/bin/python3
 verifier:
-  name: testinfra
+  name: ansible
