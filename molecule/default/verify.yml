@@ -1,0 +1,14 @@
+---
+
+- name: Verify
+  hosts: all
+  tasks:
+    - name: retrieve service state
+      become: true
+      service_facts:
+
+    - name: ensure the backend server is up and running
+      failed_when: "ansible_facts.services['backend.service']['state'] != 'running'"
+      changed_when: false
+      debug:
+        msg: "backend service is '{{ ansible_facts.services['backend.service']['state'] }}'"

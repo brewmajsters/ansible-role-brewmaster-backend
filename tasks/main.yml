@@ -22,7 +22,23 @@
     repo: "{{ repo['url'] }}"
     force: true
     version: "{{ repo['version'] | default(omit) }}"
-    dest: "{{ repo['dest'] }}"  # "{{ repo['dest'].startswith('/') | ternary(repo['dest'], ansible_env.HOME + repo['dest']) }}"
+    dest: "{{ repo['dest'] }}"
+  register: git_repo
+  tags: install
+
+- name: copy .env.example to .env file
+  when: git_repo.changed
+  command: "cp .env.example .env"
+  args:
+    chdir: "{{ repo['dest'] }}"
+  tags: install
+
+- name: configure environment variables
+  lineinfile:
+    regex: "{{ item.key }}"
+    line: "{{ item.key }}={{ item.value }}"
+    path: "{{ repo['dest'] }}/.env"
+  with_dict: "{{ backend_environments }}"
   tags: install
 
 - name: PIPENV | install backend application
@@ -31,6 +47,24 @@
   args:
     chdir: "{{ repo['dest'] }}"
   changed_when: false
+  tags: install
+
+- name: PIPENV | get the python_venv
+  when: develop
+  command: "pipenv --py"
+  args:
+    chdir: "{{ repo['dest'] }}"
+  changed_when: false
+  register: venv_python_executable
+  tags: install
+
+- name: PIPENV | get the proejct python version
+  shell: >
+    grep python_version Pipfile | awk '{print $3}' | tr -d '"'
+  args:
+    chdir: "{{ repo['dest'] }}"
+  changed_when: false
+  register: venv_python_version
   tags: install
 
 - name: SYSTEMD | flask server repo absolute path
@@ -46,14 +80,14 @@
     src: "flask_unit_file.service.j2"
     dest: "/etc/systemd/system/{{ backend_service['name'] }}.service"
   register: unit_file
-  notify:
-    - SYSTEMD | backend restart
-    - SYSTEMD | daemon reload
+  notify:  SYSTEMD | backend restart
   tags: configure
 
 - name: SYSTEMD | start backend
   become: true
+  when: unit_file.changed
   systemd:
+    daemon_reload: true
     name: "{{ backend_service['name'] }}"
     state: started
     enabled: true

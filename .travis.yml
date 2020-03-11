@@ -1,0 +1,18 @@
+---
+
+language: python
+python:
+  - "3.6"
+
+services:
+  - docker
+
+before_install:
+  - pip install molecule docker
+  - git clone https://github.com/brewmajsters/timescaledb-docker
+  - docker build -t brewmaster-timescaledb ./timescaledb-docker/
+  - docker network create test
+  - docker run -d --name timescaledb -p 5432:5432 --net test brewmaster-timescaledb
+
+script:
+  - molecule test

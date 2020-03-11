@@ -9,3 +9,10 @@ backend_service:
   name: "backend"
 
 develop: false
+
+# environment variable to be modified in '.env' file
+backend_environments: {}
+# backend_environments:
+#   DATABASE_PASSWORD: brewmasters
+#   DATABASE_USER: postgres
+#   DATABASE_NAME: brewmaster

@@ -33,44 +33,31 @@ scenario:
     - create
     - prepare
     - converge
-    # - idempotence
+    - idempotence
     - side_effect
     - verify
     - cleanup
     - destroy
 driver:
-  name: lxd
-lint:
-  name: yamllint
+  name: docker
+lint: yamllint .
 platforms:
   - name: instance-backend
-    source:
-      type: image
-      mode: pull
-      server: https://images.linuxcontainers.org
-      protocol: simplestreams
-      alias: debian/buster/amd64
-    architecture: x86_64
-    config:
-      limits.cpu: "2"
-    devices:
-      kvm:
-        path: /dev/kvm
-        type: unix-char
-    profiles:
-      - default
-    force_stop: false
-    wait_for_ipv4_addresses: true
-    timeout: 60
+    image: "geerlingguy/docker-debian10-ansible:latest"
+    command: "/sbin/init"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+    pre_build_image: true
+    networks:
+      - name: test
+        links:
+          - timescaledb
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
   inventory:
     group_vars:
       all:
         ansible_python_interpreter: /usr/bin/python3
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible
