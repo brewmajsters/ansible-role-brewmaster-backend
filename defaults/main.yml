@@ -5,9 +5,6 @@ repo:
   dest: "backend"
   url: "https://github.com/brewmajsters/brewmaster-backend.git"
 
-backend_service:
-  name: "backend"
-
 develop: false
 
 # environment variable to be modified in '.env' file

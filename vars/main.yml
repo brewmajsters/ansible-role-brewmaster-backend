@@ -6,3 +6,6 @@ dependencies:
   - libpq-dev
   - python3-pip
   - netbase
+
+backend_service:
+  name: "backend"
