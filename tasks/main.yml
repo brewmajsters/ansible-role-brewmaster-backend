@@ -19,10 +19,10 @@
 
 - name: GIT | clone backend repository
   git:
-    repo: "{{ repo['url'] }}"
+    repo: "{{ backend_repo['url'] }}"
     force: true
-    version: "{{ repo['version'] | default(omit) }}"
-    dest: "{{ repo['dest'] }}"
+    version: "{{ backend_repo['version'] | default(omit) }}"
+    dest: "{{ backend_repo['dest'] }}"
   register: git_repo
   tags: install
 
@@ -30,30 +30,30 @@
   when: git_repo.changed
   command: "cp .env.example .env"
   args:
-    chdir: "{{ repo['dest'] }}"
+    chdir: "{{ backend_repo['dest'] }}"
   tags: install
 
 - name: configure environment variables
   lineinfile:
     regex: "{{ item.key }}"
     line: "{{ item.key }}={{ item.value }}"
-    path: "{{ repo['dest'] }}/.env"
+    path: "{{ backend_repo['dest'] }}/.env"
   with_dict: "{{ backend_environments }}"
   tags: install
 
 - name: PIPENV | install backend application
   become: true
-  command: "pipenv install {{ develop | ternary('', '--deploy --system') }}"
+  command: "pipenv install {{ backend_develop | ternary('', '--deploy --system') }}"
   args:
-    chdir: "{{ repo['dest'] }}"
+    chdir: "{{ backend_repo['dest'] }}"
   changed_when: false
   tags: install
 
 - name: PIPENV | get the python_venv
-  when: develop
+  when: backend_develop
   command: "pipenv --py"
   args:
-    chdir: "{{ repo['dest'] }}"
+    chdir: "{{ backend_repo['dest'] }}"
   changed_when: false
   register: venv_python_executable
   tags: install
@@ -62,7 +62,7 @@
   shell: >
     grep python_version Pipfile | awk '{print $3}' | tr -d '"'
   args:
-    chdir: "{{ repo['dest'] }}"
+    chdir: "{{ backend_repo['dest'] }}"
   changed_when: false
   register: venv_python_version
   tags: install
@@ -70,7 +70,7 @@
 - name: SYSTEMD | flask server repo absolute path
   command: "pwd"
   args:
-    chdir: "{{ repo['dest'] }}"
+    chdir: "{{ backend_repo['dest'] }}"
   register: repo_absolute_path
   changed_when: false
 

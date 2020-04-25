@@ -1,11 +1,11 @@
 ---
 # defaults file for brewmaster-backend
 
-repo:
+backend_repo:
   dest: "backend"
   url: "https://github.com/brewmajsters/brewmaster-backend.git"
 
-develop: false
+backend_develop: false
 
 # environment variable to be modified in '.env' file
 backend_environments: {}
