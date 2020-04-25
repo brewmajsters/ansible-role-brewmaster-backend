@@ -6,4 +6,4 @@ After=network.target
 WorkingDirectory={{ repo_absolute_path.stdout }}
 
 Environment=PYTHONUNBUFFERED=1
-ExecStart={{ develop | ternary(venv_python_executable.stdout, '/usr/bin/python' + venv_python_version.stdout)}}  {{ repo_absolute_path.stdout }}/wsgi.py 2> /dev/null
+ExecStart={{ backend_develop | ternary(venv_python_executable.stdout, '/usr/bin/python' + venv_python_version.stdout)}}  {{ repo_absolute_path.stdout }}/wsgi.py 2> /dev/null
