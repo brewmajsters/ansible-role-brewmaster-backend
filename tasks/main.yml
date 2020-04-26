@@ -41,31 +41,37 @@
   with_dict: "{{ backend_environments }}"
   tags: install
 
-- name: PIPENV | install backend application
-  become: true
-  command: "pipenv install {{ backend_develop | ternary('', '--deploy --system') }}"
-  args:
-    chdir: "{{ backend_repo['dest'] }}"
-  changed_when: false
-  tags: install
-
-- name: PIPENV | get the python_venv
-  when: backend_develop
-  command: "pipenv --py"
-  args:
-    chdir: "{{ backend_repo['dest'] }}"
-  changed_when: false
-  register: venv_python_executable
-  tags: install
-
-- name: PIPENV | get the proejct python version
+- name: retrieve python version from Pipfile
   shell: >
-    grep python_version Pipfile | awk '{print $3}' | tr -d '"'
+    grep python_version Pipfile | cut -d'"' -f2
   args:
     chdir: "{{ backend_repo['dest'] }}"
   changed_when: false
-  register: venv_python_version
+  register: python_version
   tags: install
+
+- set_fact:
+    python_version: "{{ python_version.stdout }}"
+
+- debug:
+    msg: "{{ python_version }}"
+
+- name: PIPENV | generate requirements.txt file
+  shell: >
+    pipenv lock --requirements | cut -d';' -f1 | tail -n+2 > {{ ansible_env['HOME'] }}/backend_requires.txt
+  args:
+    chdir: "{{ backend_repo['dest'] }}"
+  changed_when: false
+  tags: install
+
+- name: install backend application requirements
+  pip:
+    requirements: "{{ ansible_env['HOME'] }}/backend_requires.txt"
+    virtualenv: "{{ ansible_env['HOME'] }}/backend_venv"
+    virtualenv_python: "{{ python_version }}"
+    editable: "{{ backend_develop }}"
+    chdir: "{{ backend_repo['dest'] }}"
+  register: backend_python
 
 - name: SYSTEMD | flask server repo absolute path
   command: "pwd"
