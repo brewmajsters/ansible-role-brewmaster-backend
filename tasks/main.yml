@@ -89,11 +89,16 @@
   notify:  SYSTEMD | backend restart
   tags: configure
 
-- name: SYSTEMD | start backend
+- name: SYSTEMD | reload daemon
   become: true
   when: unit_file.changed
   systemd:
     daemon_reload: true
+  tags: configure
+
+- name: SYSTEMD | ensure backend is started and enabled
+  become: true
+  systemd:
     name: "{{ backend_service['name'] }}"
     state: started
     enabled: true
