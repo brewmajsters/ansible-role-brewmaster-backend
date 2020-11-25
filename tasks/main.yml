@@ -19,10 +19,10 @@
 
 - name: GIT | clone backend repository
   git:
-    repo: "{{ backend_repo['url'] }}"
+    repo: "{{ backend_repo_url }}"
     force: true
-    version: "{{ backend_repo['version'] | default(omit) }}"
-    dest: "{{ backend_repo['dest'] }}"
+    version: "{{ backend_repo_version | default(omit) }}"
+    dest: "{{ backend_repo_dest }}"
   register: git_repo
   tags: install
 
@@ -30,14 +30,14 @@
   when: git_repo.changed
   command: "cp .env.example .env"
   args:
-    chdir: "{{ backend_repo['dest'] }}"
+    chdir: "{{ backend_repo_dest }}"
   tags: install
 
 - name: configure environment variables
   lineinfile:
     regex: "{{ item.key }}"
     line: "{{ item.key }}={{ item.value }}"
-    path: "{{ backend_repo['dest'] }}/.env"
+    path: "{{ backend_repo_dest }}/.env"
   with_dict: "{{ backend_environments }}"
   tags: install
 
@@ -45,7 +45,7 @@
   shell: >
     grep python_version Pipfile | cut -d'"' -f2
   args:
-    chdir: "{{ backend_repo['dest'] }}"
+    chdir: "{{ backend_repo_dest }}"
   changed_when: false
   register: python_version
   tags: install
@@ -60,7 +60,7 @@
   shell: >
     pipenv lock --requirements | cut -d';' -f1 | tail -n+2 > {{ ansible_env['HOME'] }}/backend_requires.txt
   args:
-    chdir: "{{ backend_repo['dest'] }}"
+    chdir: "{{ backend_repo_dest }}"
   changed_when: false
   tags: install
 
@@ -70,13 +70,13 @@
     virtualenv: "{{ ansible_env['HOME'] }}/backend_venv"
     virtualenv_python: "{{ python_version }}"
     editable: "{{ backend_develop }}"
-    chdir: "{{ backend_repo['dest'] }}"
+    chdir: "{{ backend_repo_dest }}"
   register: backend_python
 
 - name: SYSTEMD | flask server repo absolute path
   command: "pwd"
   args:
-    chdir: "{{ backend_repo['dest'] }}"
+    chdir: "{{ backend_repo_dest }}"
   register: repo_absolute_path
   changed_when: false
 

@@ -1,9 +1,9 @@
 ---
 # defaults file for brewmaster-backend
 
-backend_repo:
-  dest: "backend"
-  url: "https://github.com/brewmajsters/brewmaster-backend.git"
+backend_repo_dest: "backend"
+backend_repo_url: "https://github.com/brewmajsters/brewmaster-backend.git"
+# backend_repo_version: develop
 
 backend_develop: false
 
