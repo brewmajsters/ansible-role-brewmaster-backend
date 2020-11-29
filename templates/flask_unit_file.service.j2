@@ -1,9 +1,13 @@
 [Unit]
 Description="Backend Flask server application"
-After=network.target
+After=network.target docker.service
 
 [Service]
 WorkingDirectory={{ repo_absolute_path.stdout }}
+Restart=always
 
 Environment=PYTHONUNBUFFERED=1
 ExecStart={{ backend_python.virtualenv }}/bin/python {{ repo_absolute_path.stdout }}/wsgi.py 2> /dev/null
+
+[Install]
+WantedBy=multi-user.target
